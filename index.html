@@ -75,7 +75,6 @@ function optionsInit(){const box=$("optionInputs");box.innerHTML="";["",""].forE
 function addOption(value=""){const box=$("optionInputs");if(box.children.length>=4){toast("A poll can have up to 4 choices.");return}const row=document.createElement("div");row.className="optionedit";const input=document.createElement("input");input.maxLength=60;input.required=true;input.placeholder=`Choice ${box.children.length+1}`;input.value=value;input.setAttribute("aria-label",`Choice ${box.children.length+1}`);const remove=document.createElement("button");remove.className="btn";remove.type="button";remove.textContent="×";remove.title="Remove choice";remove.onclick=()=>{if(box.children.length<=2){toast("Please keep at least 2 choices.");return}row.remove();renumberOptions()};row.append(input,remove);box.append(row);renumberOptions()}
 function renumberOptions(){[...$("optionInputs").children].forEach((r,i)=>{r.querySelector("input").placeholder=`Choice ${i+1}`;r.querySelector("input").setAttribute("aria-label",`Choice ${i+1}`);r.querySelector("button").style.visibility=$("optionInputs").children.length<=2?"hidden":"visible"});$("addOption").disabled=$("optionInputs").children.length>=4}
 $("addOption").onclick=()=>addOption();optionsInit();
-```js
 async function api(path,opts={}){
   const base="https://ubbdknvkpncoljaiaylj.supabase.co/rest/v1";
   const key="sb_publishable_BUHMZP34ZmCGwCE_ZipS1w_Pijq9NZ6";
@@ -93,7 +92,7 @@ async function api(path,opts={}){
   if(!res.ok)throw new Error(data.message||data.error||"Request failed");
   return data;
 }
-```
+
 async function loadPolls(){
  try{
   const [pollData,voteData]=await Promise.all([
