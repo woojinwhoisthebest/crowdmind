@@ -81,9 +81,9 @@ async function api(path,opts={}){
   const res=await fetch(base+path,{
     ...opts,
     headers:{
-      "Content-Type":"application/json",
+      "Content-Type""application/json",
       "apikey":key,
-      "Authorization":"Bearer "+key,
+      "Authorization""Bearer "+key,
       ...(opts.headers||{})
     }
   });
