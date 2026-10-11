@@ -76,7 +76,7 @@ function addOption(value=""){const box=$("optionInputs");if(box.children.length>
 function renumberOptions(){[...$("optionInputs").children].forEach((r,i)=>{r.querySelector("input").placeholder=`Choice ${i+1}`;r.querySelector("input").setAttribute("aria-label",`Choice ${i+1}`);r.querySelector("button").style.visibility=$("optionInputs").children.length<=2?"hidden":"visible"});$("addOption").disabled=$("optionInputs").children.length>=4}
 $("addOption").onclick=()=>addOption();optionsInit();
 async function api(path,opts={}){
-  const base="https://ubbdknvkpncoljaiaylj.supabase.co/rest/v1";
+  const base=https://ubbdknvkpncoljaiaylj.supabase.co/rest/v1;
   const key="sb_publishable_BUHMZP34ZmCGwCE_ZipS1w_Pijq9NZ6";
   const res=await fetch(base+path,{
     ...opts,
