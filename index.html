@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#10111d">
+<title>CrowdMind — What will the crowd choose?</title>
+<style>
+:root{--bg:#10111d;--panel:#191b2b;--panel2:#22243a;--text:#f7f7ff;--muted:#a6aac5;--line:#30334d;--purple:#8b7cff;--cyan:#61e7dc;--pink:#ff8db5;--good:#64e3ad}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -10%,#29234f 0%,var(--bg) 52%);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}.wrap{width:min(1060px,93vw);margin:auto;padding:24px 0 50px}
+header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:36px}.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.09em;font-size:14px}.logo{width:39px;height:39px;border-radius:13px;background:linear-gradient(135deg,var(--purple),#5146c7);display:grid;place-items:center;font-size:21px;box-shadow:0 8px 30px #7465ff44}.headright{display:flex;gap:9px;align-items:center}.chip{border:1px solid var(--line);border-radius:999px;padding:8px 11px;color:var(--muted);font-size:12px}.btn{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:#ffffff08;color:var(--text);font-weight:750}.btn.primary{border:0;background:linear-gradient(100deg,#8b7cff,#6c61ee);box-shadow:0 8px 25px #7164ef25}.hero{margin:0 auto 25px;max-width:850px}.eyebrow{color:var(--cyan);font-weight:800;letter-spacing:.16em;font-size:11px}.hero h1{font-size:clamp(36px,6.5vw,64px);line-height:1.01;letter-spacing:-.055em;margin:12px 0}.hero h1 span{color:var(--purple)}.hero p{color:var(--muted);font-size:15px;line-height:1.65;max-width:590px;margin:0}
+.tabs{display:flex;gap:8px;margin:24px 0 18px;flex-wrap:wrap}.tab{border:1px solid var(--line);background:#ffffff04;color:var(--muted);border-radius:999px;padding:10px 15px;font-weight:750;font-size:13px}.tab.active{background:#8b7cff20;border-color:#8b7cff77;color:#d9d4ff}
+.layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(240px,.65fr);gap:16px;align-items:start}.card{background:linear-gradient(155deg,#1b1d30f5,#171928f5);border:1px solid var(--line);border-radius:22px;padding:22px;box-shadow:0 20px 70px #0002}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:17px}.sectionhead h2{font-size:18px;margin:0}.muted{color:var(--muted)}.small{font-size:12px;line-height:1.55}.poll{border:1px solid var(--line);background:#ffffff03;border-radius:18px;padding:18px;margin-bottom:12px}.poll:last-child{margin-bottom:0}.polltop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}.tag{background:#8b7cff1c;color:#c6bfff;border-radius:999px;padding:6px 9px;font-size:10px;font-weight:850;letter-spacing:.06em}.poll h3{font-size:19px;line-height:1.3;letter-spacing:-.02em;margin:0 0 6px}.pollmeta{font-size:11px;color:var(--muted);margin-bottom:14px}.choices{display:grid;gap:8px}.choice{display:flex;align-items:center;gap:10px;width:100%;text-align:left;border:1px solid var(--line);background:#ffffff03;color:var(--text);padding:11px 12px;border-radius:12px;position:relative;overflow:hidden}.choice:hover{border-color:#7770d9;background:#8b7cff0a}.choice.chosen{border-color:var(--purple);background:#8b7cff17}.choice .ctext{position:relative;z-index:1;flex:1;font-weight:650;font-size:13px}.choice .percent{position:relative;z-index:1;color:var(--muted);font-size:12px}.choice .barfill{position:absolute;left:0;top:0;bottom:0;background:#8b7cff1b;pointer-events:none}.pollfoot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:13px}.pollfoot .muted{font-size:11px}.empty{border:1px dashed #414460;border-radius:16px;padding:26px;text-align:center;color:var(--muted);line-height:1.6}.side h3{font-size:16px;margin:0 0 12px}.stat{padding:13px 0;border-bottom:1px solid var(--line)}.stat:last-of-type{border:0}.stat-label{color:var(--muted);font-size:11px}.stat-value{font-size:27px;font-weight:900;letter-spacing:-.04em;margin-top:3px}.note{margin-top:14px;padding:14px;border-radius:14px;background:#61e7dc0b;border:1px solid #61e7dc20;color:#b5cbd1;font-size:12px;line-height:1.6}.notice{font-size:11px;color:#888daa;line-height:1.55;margin-top:12px}
+.field{display:grid;gap:7px;margin:13px 0}.field label{font-size:12px;font-weight:800;color:#dfe0f5}.field input,.field textarea,.field select{width:100%;border:1px solid var(--line);background:#111321;color:var(--text);border-radius:12px;padding:12px;outline:none}.field input:focus,.field textarea:focus{border-color:var(--purple)}.field textarea{min-height:75px;resize:vertical}.field .hint{font-size:11px;color:var(--muted)}.optionedit{display:flex;gap:8px;margin:8px 0}.optionedit input{flex:1;min-width:0}.optionedit button{width:40px;flex:0 0 40px}.formactions{display:flex;gap:9px;align-items:center;margin-top:16px}.formactions button{flex:1}.hidden{display:none!important}.toast{position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#24263b;border:1px solid #444765;color:white;border-radius:12px;padding:12px 16px;font-size:13px;transition:.25s;max-width:90vw;text-align:center;z-index:10}.toast.show{opacity:1;transform:translate(-50%,0)}.footer{text-align:center;color:#747993;font-size:11px;margin-top:32px;line-height:1.8}.report{border:0;background:transparent;color:#898eaa;font-size:11px;padding:4px}.modalbg{position:fixed;inset:0;background:#070812bd;display:grid;place-items:center;padding:18px;z-index:5}.modal{width:min(530px,100%);max-height:90vh;overflow:auto;background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:22px}.modal h2{margin:0 0 6px}.modal .btn{width:100%}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.hero{margin-bottom:20px}.card{padding:17px}.side{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}.side h3,.note{grid-column:1/-1}.headright .chip{display:none}header{margin-bottom:27px}}
+</style>
+</head>
+<body><div class="wrap">
+<header>
+ <div class="brand"><div class="logo">✳</div><span>CROWD<span style="color:var(--purple)">MIND</span></span></div>
+ <div class="headright"><span class="chip">🌍 Made for curious people</span><button class="btn primary" id="headerCreate">＋ Create a poll</button></div>
+</header>
+<section class="hero"><div class="eyebrow">THE INTERNET'S OPINION PLAYGROUND</div><h1>Guess the crowd.<br><span>Start a debate.</span></h1><p>Vote on questions from people around the world—or create your own and see what everyone thinks.</p></section>
+<nav class="tabs">
+ <button class="tab active" data-view="feed">🌐 Community feed</button>
+ <button class="tab" data-view="create">✍️ Create a poll</button>
+ <button class="tab" data-view="mine">⭐ My activity</button>
+</nav>
+<div class="layout">
+ <main class="card">
+  <div id="feedView"><div class="sectionhead"><h2>Trending questions</h2><span class="small muted" id="feedCount">Loading…</span></div><div id="feed"></div></div>
+  <div id="createView" class="hidden">
+   <div class="sectionhead"><h2>Create your own poll</h2><span class="tag">COMMUNITY MADE</span></div>
+   <p class="muted small">Ask a fun, clear question. Once this is connected to the live database, your poll can appear in the shared community feed.</p>
+   <form id="createForm">
+    <div class="field"><label for="pollQuestion">Your question</label><textarea id="pollQuestion" maxlength="140" required placeholder="e.g. Which fictional world would you visit?"></textarea><div class="hint">Keep it short and friendly. Max 140 characters.</div></div>
+    <div class="field"><label>Answer choices (2–4)</label><div id="optionInputs"></div><button type="button" class="btn" id="addOption">＋ Add an option</button></div>
+    <div class="field"><label for="pollCategory">Category</label><select id="pollCategory"><option>Fun</option><option>Would You Rather</option><option>Music & Movies</option><option>Games</option><option>Life & Opinions</option></select></div>
+    <div class="field"><label for="pollCreator">Nickname (optional)</label><input id="pollCreator" maxlength="20" placeholder="e.g. cosmiccat"><div class="hint">Don't use your full name or personal information.</div></div>
+    <div class="formactions"><button type="button" class="btn" id="cancelCreate">Cancel</button><button type="submit" class="btn primary">Publish poll ↗</button></div>
+    <p class="notice">Community safety: don't post private information, bullying, sexual content, or dangerous challenges. Polls should be moderated before a public launch.</p>
+   </form>
+  </div>
+  <div id="mineView" class="hidden"><div class="sectionhead"><h2>My activity</h2><span class="tag">THIS BROWSER</span></div><div id="mine"></div><p class="notice">This simple prototype remembers your activity in this browser. It does not create a public identity or account.</p></div>
+ </main>
+ <aside class="card side">
+  <h3>Your CrowdMind stats</h3>
+  <div class="stat"><div class="stat-label">POINTS EARNED</div><div class="stat-value" id="points">0</div></div>
+  <div class="stat"><div class="stat-label">POLLS VOTED ON</div><div class="stat-value" id="votes">0</div></div>
+  <div class="stat"><div class="stat-label">POLLS YOU CREATED</div><div class="stat-value" id="created">0</div></div>
+  <div class="note"><strong>How it works</strong><br>Vote in community polls. When a poll closes in a future version, you'll earn points for matching the most popular choice. Create a question and invite the world to answer.</div>
+  <div class="notice" id="connection">Checking connection…</div>
+ </aside>
+</div>
+<div class="footer">CrowdMind is an early prototype. Be kind, protect your privacy, and report inappropriate polls.<br>Global voting needs a deployed backend and database; demo mode stores data only in this browser.</div>
+</div>
+<div class="toast" id="toast"></div>
+<div id="reportModal" class="modalbg hidden"><div class="modal"><div class="sectionhead"><h2>Report this poll</h2><button class="report" id="closeReport">✕ Close</button></div><p class="muted small">Tell us why this poll may be inappropriate.</p><form id="reportForm"><input id="reportId" type="hidden"><div class="field"><label for="reportReason">Reason</label><select id="reportReason"><option>Spam</option><option>Bullying or harassment</option><option>Private information</option><option>Unsafe or inappropriate content</option><option>Other</option></select></div><button class="btn primary" type="submit">Submit report</button></form></div></div>
+<script>
+const starter=[
+{id:"starter-1",question:"What would people give up first for a year?",options:["Social media","Video games","Music","Fast food"],category:"Would You Rather",creator:"CrowdMind",votes:[38,24,8,30],sample:true},
+{id:"starter-2",question:"Which superpower would you choose?",options:["Teleport anywhere","Read minds","Stop time","Talk to animals"],category:"Fun",creator:"CrowdMind",votes:[41,22,25,12],sample:true},
+{id:"starter-3",question:"What makes a day instantly better?",options:["A message from a friend","Unexpected free time","Great food","Good news"],category:"Life & Opinions",creator:"CrowdMind",votes:[19,31,22,28],sample:true}
+];
+const $=id=>document.getElementById(id);
+const safeGet=(key, fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
+const save=(key,val)=>localStorage.setItem(key,JSON.stringify(val));
+let localPolls=safeGet("cm_polls",[]), myVotes=safeGet("cm_votes",{}), createdIds=safeGet("cm_created",[]);
+let apiOnline=false, livePolls=[];
+function toast(s){$("toast").textContent=s;$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),2600)}
+function setView(v){document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("active",t.dataset.view===v));["feed","create","mine"].forEach(x=>$(x+"View").classList.toggle("hidden",x!==v));if(v==="mine")renderMine();if(v==="create"){$("pollQuestion").focus()}}
+document.querySelectorAll(".tab").forEach(t=>t.addEventListener("click",()=>setView(t.dataset.view)));
+$("headerCreate").onclick=()=>setView("create");$("cancelCreate").onclick=()=>setView("feed");
+function optionsInit(){const box=$("optionInputs");box.innerHTML="";["",""].forEach((v,i)=>addOption(v));}
+function addOption(value=""){const box=$("optionInputs");if(box.children.length>=4){toast("A poll can have up to 4 choices.");return}const row=document.createElement("div");row.className="optionedit";const input=document.createElement("input");input.maxLength=60;input.required=true;input.placeholder=`Choice ${box.children.length+1}`;input.value=value;input.setAttribute("aria-label",`Choice ${box.children.length+1}`);const remove=document.createElement("button");remove.className="btn";remove.type="button";remove.textContent="×";remove.title="Remove choice";remove.onclick=()=>{if(box.children.length<=2){toast("Please keep at least 2 choices.");return}row.remove();renumberOptions()};row.append(input,remove);box.append(row);renumberOptions()}
+function renumberOptions(){[...$("optionInputs").children].forEach((r,i)=>{r.querySelector("input").placeholder=`Choice ${i+1}`;r.querySelector("input").setAttribute("aria-label",`Choice ${i+1}`);r.querySelector("button").style.visibility=$("optionInputs").children.length<=2?"hidden":"visible"});$("addOption").disabled=$("optionInputs").children.length>=4}
+$("addOption").onclick=()=>addOption();optionsInit();
+async function api(path,opts={}){const res=await fetch(path,{...opts,headers:{"Content-Type":"application/json",...(opts.headers||{})}});let data={};try{data=await res.json()}catch{}if(!res.ok)throw new Error(data.error||"Request failed");return data}
+async function loadPolls(){
+ try{const data=await api("/api/polls");apiOnline=true;livePolls=data.polls||[];$("connection").textContent="🟢 Connected to community database";}catch(e){apiOnline=false;livePolls=[];$("connection").textContent="🟡 Demo mode: polls are saved in this browser only."}
+ renderFeed();
+}
+function allPolls(){return [...localPolls,...starter,...livePolls.filter(p=>!starter.some(s=>s.id===p.id))].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}
+function normalize(p){const count=p.votes?.reduce((a,b)=>a+b,0)||0;return {...p,totalVotes:p.totalVotes??count,votes:p.votes||p.options.map(()=>0)}}
+function renderFeed(){
+ const all=allPolls().map(normalize);$("feedCount").textContent=`${all.length} questions`;
+ const feed=$("feed");feed.innerHTML="";
+ if(!all.length){feed.innerHTML='<div class="empty">No polls yet. Be the first to ask a question!</div>';return}
+ all.forEach(p=>{
+  const voted=myVotes[p.id];const card=document.createElement("article");card.className="poll";
+  const top=document.createElement("div");top.className="polltop";top.innerHTML=`<span class="tag"></span><span class="small muted"></span>`;top.children[0].textContent=p.category||"Fun";top.children[1].textContent=p.creator?`by ${p.creator}`:"community";
+  const h=document.createElement("h3");h.textContent=p.question;
+  const meta=document.createElement("div");meta.className="pollmeta";meta.textContent=`${p.totalVotes||0} votes · ${p.sample?"sample question":"community poll"}`;
+  const choices=document.createElement("div");choices.className="choices";
+  p.options.forEach((op,i)=>{const b=document.createElement("button");b.className="choice"+(voted===i?" chosen":"");b.disabled=!!voted;b.type="button";const fill=document.createElement("span");fill.className="barfill";fill.style.width=(voted?(p.votes[i]||0):0)+"%";const text=document.createElement("span");text.className="ctext";text.textContent=op;const pct=document.createElement("span");pct.className="percent";pct.textContent=voted?`${p.votes[i]||0}%`:"";b.append(fill,text,pct);b.onclick=()=>vote(p,i);choices.append(b)});
+  const foot=document.createElement("div");foot.className="pollfoot";const label=document.createElement("span");label.className="muted";label.textContent=voted?"✓ You voted":"Choose your answer";const share=document.createElement("button");share.className="btn";share.textContent="↗ Share";share.onclick=()=>sharePoll(p);const report=document.createElement("button");report.className="report";report.textContent="Report";report.onclick=()=>openReport(p.id);foot.append(label,share,report);
+  card.append(top,h,meta,choices,foot);feed.append(card);
+ });
+ updateStats();
+}
+async function vote(p,i){
+ if(myVotes[p.id]!==undefined){toast("You've already voted in this browser.");return}
+ if(p.sample||!apiOnline){
+  if(!p.sample){const lp=localPolls.find(x=>x.id===p.id);if(lp){lp.votes[i]=(lp.votes[i]||0)+1;lp.totalVotes=(lp.totalVotes||0)+1;save("cm_polls",localPolls)}}
+  else {p.votes[i]++;p.totalVotes=(p.totalVotes||0)+1}
+  myVotes[p.id]=i;save("cm_votes",myVotes);toast(p.sample?"Demo vote saved in this browser.":"Vote saved locally; it isn't global yet.");renderFeed();return
+ }
+ try{const voterId=getVoterId();await api("/api/vote",{method:"POST",body:JSON.stringify({pollId:p.id,optionIndex:i,voterId})});myVotes[p.id]=i;save("cm_votes",myVotes);toast("Vote submitted to the community!");await loadPolls()}catch(e){toast(e.message||"Could not submit vote.")}
+}
+function getVoterId(){let id=localStorage.getItem("cm_voter_id");if(!id){id=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2));localStorage.setItem("cm_voter_id",id)}return id}
+$("createForm").addEventListener("submit",async e=>{
+ e.preventDefault();const question=$("pollQuestion").value.trim();const opts=[...$("optionInputs").querySelectorAll("input")].map(x=>x.value.trim()).filter(Boolean);if(question.length<8){toast("Please write a question with at least 8 characters.");return}if(opts.length<2||new Set(opts.map(x=>x.toLowerCase())).size!==opts.length){toast("Add 2–4 different answer choices.");return}
+ const poll={question,options:opts,category:$("pollCategory").value,creator:$("pollCreator").value.trim()||"Anonymous"};
+ if(apiOnline){try{const data=await api("/api/polls",{method:"POST",body:JSON.stringify({...poll,creator:poll.creator,voterId:getVoterId()})});createdIds.push(data.poll.id);save("cm_created",createdIds);toast("Your poll is live in the community feed!");$("createForm").reset();optionsInit();await loadPolls();setView("feed");return}catch(err){toast(err.message||"Could not publish poll.");return}}
+ poll.id="local-"+Date.now();poll.createdAt=Date.now();poll.votes=opts.map(()=>0);poll.totalVotes=0;localPolls.unshift(poll);createdIds.push(poll.id);save("cm_polls",localPolls);save("cm_created",createdIds);toast("Poll saved in this browser only. Deploy the backend to share globally.");$("createForm").reset();optionsInit();renderFeed();setView("feed")
+});
+function updateStats(){$("points").textContent=Object.keys(myVotes).length*25;$("votes").textContent=Object.keys(myVotes).length;$("created").textContent=createdIds.length}
+function renderMine(){const box=$("mine");box.innerHTML="";const mine=allPolls().filter(p=>createdIds.includes(p.id));if(!mine.length){box.innerHTML='<div class="empty">You haven’t created a poll yet.<br>Make one and start the conversation.</div>';return}mine.forEach(p=>{const d=document.createElement("div");d.className="poll";const h=document.createElement("h3");h.textContent=p.question;const meta=document.createElement("p");meta.className="small muted";meta.textContent=`${p.totalVotes||0} votes · ${p.category}`;const b=document.createElement("button");b.className="btn";b.textContent="Share poll ↗";b.onclick=()=>sharePoll(p);d.append(h,meta,b);box.append(d)})}
+async function sharePoll(p){const url=new URL(location.href);url.hash="poll="+encodeURIComponent(p.id);try{await navigator.clipboard.writeText(url.toString());toast("Poll link copied! (Only globally accessible after deployment.)")}catch{prompt("Copy this poll link:",url.toString())}}
+function openReport(id){$("reportId").value=id;$("reportModal").classList.remove("hidden")}
+$("closeReport").onclick=()=>$("reportModal").classList.add("hidden");
+$("reportForm").addEventListener("submit",async e=>{e.preventDefault();const report={pollId:$("reportId").value,reason:$("reportReason").value};if(apiOnline){try{await api("/api/report",{method:"POST",body:JSON.stringify(report)});toast("Report received. Thank you.");}catch{toast("Report could not be sent.");}}else{const r=safeGet("cm_reports",[]);r.push({...report,at:Date.now()});save("cm_reports",r);toast("Report saved in this browser demo.");}$("reportModal").classList.add("hidden")});
+loadPolls();
+</script></body></html>
