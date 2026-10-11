@@ -75,9 +75,58 @@ function optionsInit(){const box=$("optionInputs");box.innerHTML="";["",""].forE
 function addOption(value=""){const box=$("optionInputs");if(box.children.length>=4){toast("A poll can have up to 4 choices.");return}const row=document.createElement("div");row.className="optionedit";const input=document.createElement("input");input.maxLength=60;input.required=true;input.placeholder=`Choice ${box.children.length+1}`;input.value=value;input.setAttribute("aria-label",`Choice ${box.children.length+1}`);const remove=document.createElement("button");remove.className="btn";remove.type="button";remove.textContent="×";remove.title="Remove choice";remove.onclick=()=>{if(box.children.length<=2){toast("Please keep at least 2 choices.");return}row.remove();renumberOptions()};row.append(input,remove);box.append(row);renumberOptions()}
 function renumberOptions(){[...$("optionInputs").children].forEach((r,i)=>{r.querySelector("input").placeholder=`Choice ${i+1}`;r.querySelector("input").setAttribute("aria-label",`Choice ${i+1}`);r.querySelector("button").style.visibility=$("optionInputs").children.length<=2?"hidden":"visible"});$("addOption").disabled=$("optionInputs").children.length>=4}
 $("addOption").onclick=()=>addOption();optionsInit();
-async function api(path,opts={}){const res=await fetch(path,{...opts,headers:{"Content-Type":"application/json",...(opts.headers||{})}});let data={};try{data=await res.json()}catch{}if(!res.ok)throw new Error(data.error||"Request failed");return data}
+```js
+async function api(path,opts={}){
+  const base="https://ubbdknvkpncoljaiaylj.supabase.co/rest/v1";
+  const key="sb_publishable_BUHMZP34ZmCGwCE_ZipS1w_Pijq9NZ6";
+  const res=await fetch(base+path,{
+    ...opts,
+    headers:{
+      "Content-Type":"application/json",
+      "apikey":key,
+      "Authorization":"Bearer "+key,
+      ...(opts.headers||{})
+    }
+  });
+  let data={};
+  try{data=await res.json()}catch{}
+  if(!res.ok)throw new Error(data.message||data.error||"Request failed");
+  return data;
+}
+```
 async function loadPolls(){
- try{const data=await api("/api/polls");apiOnline=true;livePolls=data.polls||[];$("connection").textContent="🟢 Connected to community database";}catch(e){apiOnline=false;livePolls=[];$("connection").textContent="🟡 Demo mode: polls are saved in this browser only."}
+ try{
+  const [pollData,voteData]=await Promise.all([
+   api("/polls?select=*&order=created_at.desc"),
+   api("/votes?select=poll_id,option_index")
+  ]);
+  const counts={};
+  voteData.forEach(v=>{
+   if(!counts[v.poll_id])counts[v.poll_id]=[];
+   counts[v.poll_id][v.option_index]=(counts[v.poll_id][v.option_index]||0)+1;
+  });
+  livePolls=pollData.map(p=>{
+   const c=counts[p.id]||[];
+   const total=c.reduce((a,b)=>a+(b||0),0);
+   return {
+    id:p.id,
+    question:p.question,
+    options:p.options,
+    category:p.category,
+    creator:p.creator,
+    createdAt:new Date(p.created_at).getTime(),
+    totalVotes:total,
+    votes:p.options.map((_,i)=>total?Math.round((c[i]||0)/total*100):0)
+   };
+  });
+  apiOnline=true;
+  $("connection").textContent="🟢 Connected to community database";
+ }catch(e){
+  console.error(e);
+  apiOnline=false;
+  livePolls=[];
+  $("connection").textContent="🟡 Demo mode: polls are saved in this browser only.";
+ }
  renderFeed();
 }
 function allPolls(){return [...localPolls,...starter,...livePolls.filter(p=>!starter.some(s=>s.id===p.id))].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0))}
@@ -105,14 +154,57 @@ async function vote(p,i){
   else {p.votes[i]++;p.totalVotes=(p.totalVotes||0)+1}
   myVotes[p.id]=i;save("cm_votes",myVotes);toast(p.sample?"Demo vote saved in this browser.":"Vote saved locally; it isn't global yet.");renderFeed();return
  }
- try{const voterId=getVoterId();await api("/api/vote",{method:"POST",body:JSON.stringify({pollId:p.id,optionIndex:i,voterId})});myVotes[p.id]=i;save("cm_votes",myVotes);toast("Vote submitted to the community!");await loadPolls()}catch(e){toast(e.message||"Could not submit vote.")}
+
+try{
+ const voterId=getVoterId();
+ await api("/votes",{
+  method:"POST",
+  body:JSON.stringify({
+   poll_id:p.id,
+   option_index:i,
+   voter_id:voterId
+  })
+ });
+ myVotes[p.id]=i;
+ save("cm_votes",myVotes);
+ toast("Vote submitted to the community!");
+ await loadPolls();
+}catch(e){
+ toast(e.message||"Could not submit vote.");
+}
+
 }
 function getVoterId(){let id=localStorage.getItem("cm_voter_id");if(!id){id=(crypto.randomUUID?crypto.randomUUID():String(Date.now())+Math.random().toString(36).slice(2));localStorage.setItem("cm_voter_id",id)}return id}
 $("createForm").addEventListener("submit",async e=>{
  e.preventDefault();const question=$("pollQuestion").value.trim();const opts=[...$("optionInputs").querySelectorAll("input")].map(x=>x.value.trim()).filter(Boolean);if(question.length<8){toast("Please write a question with at least 8 characters.");return}if(opts.length<2||new Set(opts.map(x=>x.toLowerCase())).size!==opts.length){toast("Add 2–4 different answer choices.");return}
  const poll={question,options:opts,category:$("pollCategory").value,creator:$("pollCreator").value.trim()||"Anonymous"};
- if(apiOnline){try{const data=await api("/api/polls",{method:"POST",body:JSON.stringify({...poll,creator:poll.creator,voterId:getVoterId()})});createdIds.push(data.poll.id);save("cm_created",createdIds);toast("Your poll is live in the community feed!");$("createForm").reset();optionsInit();await loadPolls();setView("feed");return}catch(err){toast(err.message||"Could not publish poll.");return}}
- poll.id="local-"+Date.now();poll.createdAt=Date.now();poll.votes=opts.map(()=>0);poll.totalVotes=0;localPolls.unshift(poll);createdIds.push(poll.id);save("cm_polls",localPolls);save("cm_created",createdIds);toast("Poll saved in this browser only. Deploy the backend to share globally.");$("createForm").reset();optionsInit();renderFeed();setView("feed")
+
+if(apiOnline){
+ try{
+  const data=await api("/polls",{
+   method:"POST",
+   headers:{"Prefer":"return=representation"},
+   body:JSON.stringify({
+    question:poll.question,
+    options:poll.options,
+    category:poll.category,
+    creator:poll.creator
+   })
+  });
+  createdIds.push(data[0].id);
+  save("cm_created",createdIds);
+  toast("Your poll is live in the community feed!");
+  $("createForm").reset();
+  optionsInit();
+  await loadPolls();
+  setView("feed");
+  return;
+ }catch(err){
+  toast(err.message||"Could not publish poll.");
+  return;
+ }
+}
+
 });
 function updateStats(){$("points").textContent=Object.keys(myVotes).length*25;$("votes").textContent=Object.keys(myVotes).length;$("created").textContent=createdIds.length}
 function renderMine(){const box=$("mine");box.innerHTML="";const mine=allPolls().filter(p=>createdIds.includes(p.id));if(!mine.length){box.innerHTML='<div class="empty">You haven’t created a poll yet.<br>Make one and start the conversation.</div>';return}mine.forEach(p=>{const d=document.createElement("div");d.className="poll";const h=document.createElement("h3");h.textContent=p.question;const meta=document.createElement("p");meta.className="small muted";meta.textContent=`${p.totalVotes||0} votes · ${p.category}`;const b=document.createElement("button");b.className="btn";b.textContent="Share poll ↗";b.onclick=()=>sharePoll(p);d.append(h,meta,b);box.append(d)})}
